@@ -54,16 +54,16 @@ struct Account: Identifiable, Codable {
     var accountAsset: [AccountType: String] = [:]
     var accountCurrency: [AccountType: [CurrencyAsset]] = [:]
     
-    init(id: String, category: AccountCategory, exchange: Exchange? = nil, apiKey: String? = nil, secretKey: String? = nil, passphrase: String? = nil, mnemonic: String? = nil, mnemonicOrder: String? = nil) throws {
+    init(id: String, category: AccountCategory, exchange: Exchange? = nil, apiKey: String? = "", secretKey: String? = "", passphrase: String? = nil, mnemonic: String? = "", mnemonicOrder: String? = "") throws {
         self.id = id
         self.category = category
         self.exchange = exchange ?? .OKX
         self.totalAsset = 0
         self.assets = []
         
-        
+
         // 使用 Keychain 保存账号信息
-        let accountToken = AccountToken(account: self, apiKey: apiKey, secretKey: secretKey, passphrase: passphrase, mnemonic: mnemonic, mnemonicOrder: mnemonicOrder)
+        let accountToken = AccountToken(account: self, apiKey: apiKey!.replacingOccurrences(of: "\\s+", with: "", options: .regularExpression, range: nil), secretKey: secretKey!.replacingOccurrences(of: "\\s+", with: "", options: .regularExpression, range: nil), passphrase: passphrase!.replacingOccurrences(of: "\\s+", with: "", options: .regularExpression, range: nil), mnemonic: mnemonic!.replacingOccurrences(of: "\\s+", with: "", options: .regularExpression, range: nil), mnemonicOrder: mnemonicOrder)
         print("try to Save to Keychain")
         //Save to Keychain
         let encoder = JSONEncoder()
@@ -443,13 +443,13 @@ class AssetViewModel: ObservableObject {
     }
     
 
-    func updateAsset() {
-        print("开始更新账号资产：资产+1")
-        self.accounts[0].totalAsset += 1
-        
-        
-    
-    }
+//    func updateAsset() {
+//        print("开始更新账号资产：资产+1")
+//        self.accounts[0].totalAsset += 1
+//        
+//        
+//    
+//    }
     
     
     // 方法来处理列表项的移动
@@ -877,7 +877,7 @@ struct modifyAccountView: View {
                                 showingAlert = true
                             } catch {
                                 // 处理其他可能的异常（来自 save 方法或其他地方）
-                                errorText = "添加交易所账号时发生未知错误"
+                                errorText = "发生未知错误"
                                 showingAlert = true
                             }
                            
@@ -891,7 +891,7 @@ struct modifyAccountView: View {
                     Alert(title: Text("错误"), message: Text(errorText), dismissButton: .default(Text("好")))
                 }
             }
-            .navigationBarTitle("添加账号", displayMode: .inline)
+            .navigationBarTitle("修改账号ID", displayMode: .inline)
         }
     }
 }
